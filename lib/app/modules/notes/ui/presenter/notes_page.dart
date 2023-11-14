@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:target_sistemas/app/modules/notes/ui/widgets/note_line_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../shared/ui/widgets/views/base_view_widget.dart';
@@ -168,55 +169,11 @@ class _NotesPageState extends State<NotesPage> {
                         height: MediaQuery.of(context).size.height * .5,
                         child: ListView.separated(
                           padding: EdgeInsets.zero,
-                          itemBuilder: (_, index) => SizedBox(
-                            height: 55,
-                            child: Container(
-                              padding: const EdgeInsets.only(left: 16),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Center(
-                                      child: SingleChildScrollView(
-                                        physics: const BouncingScrollPhysics(),
-                                        scrollDirection: Axis.horizontal,
-                                        child: Text(
-                                          store.notes[index],
-                                          textAlign: TextAlign.center,
-                                          maxLines: 1,
-                                          style: const TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  GestureDetector(
-                                    onTap: () {
-                                      editNotePopup(context, index);
-                                    },
-                                    child: const Icon(
-                                      Icons.edit,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  GestureDetector(
-                                    onTap: () {
-                                      deleteNotePopup(context, index);
-                                    },
-                                    child: const Icon(
-                                      Icons.cancel,
-                                      color: Colors.red,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                ],
-                              ),
-                            ),
-                          ),
+                          itemBuilder: (_, index) => NoteLineWidget(
+                              note: store.notes[index],
+                              editPopup: editNotePopup,
+                              deletePopup: deleteNotePopup,
+                              index: index),
                           separatorBuilder: (_, __) => const Divider(
                             height: 1,
                             color: Colors.grey,

@@ -11,22 +11,18 @@ abstract class AuthStoreBase with Store {
   final TextEditingController password = TextEditingController();
 
   @observable
-  bool userLogged = false;
-  @action
-  setUserLogged(bool value) => userLogged = value;
-
-  @observable
   bool debugError = false;
   @action
   setDebugError(bool value) => debugError = value;
 
   @action
-  Future<void> validateForm() async {
+  Future<bool> validateForm() async {
     if (keyForm.currentState!.validate()) {
       if (debugError) setDebugError(false);
-      setUserLogged(true);
+      return true;
     } else {
       setDebugError(true);
+      return false;
     }
   }
 }
