@@ -1,4 +1,0 @@
-#Mon Nov 13 21:39:17 AMT 2023
-base.0=/home/segatti/Documentos/Git/Projeto/test/build/app/intermediates/dex/debug/mergeDexDebug/classes.dex
-renamed.0=classes.dex
-path.0=classes.dex

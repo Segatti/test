@@ -8,7 +8,14 @@ class NotesStore = NotesStoreBase with _$NotesStore;
 
 abstract class NotesStoreBase with Store {
   final GlobalKey<FormState> keyForm = GlobalKey();
+  final GlobalKey<FormState> keyFormPopup = GlobalKey();
   final TextEditingController note = TextEditingController();
+  
+  @observable
+  TextEditingController noteEdit = TextEditingController();
+  @action
+  setNoteEdit(String value) => noteEdit.text = value;
+  
 
   @observable
   bool debugError = false;
@@ -32,6 +39,19 @@ abstract class NotesStoreBase with Store {
       // Gerando nova hash devido a bug do MobX
       List<String> notesNew = List.from(notes.map((e) => e).toList());
       notesNew.add(note);
+      setNotes(notesNew);
+      final SharedPreferences storage = await SharedPreferences.getInstance();
+      await storage.setStringList("notes", notes);
+    } else {
+      setDebugError(true);
+    }
+  }
+
+  @action
+  Future<void> editNote(int index) async {
+    if (keyFormPopup.currentState!.validate()) {
+      notes[index] = noteEdit.text;
+      List<String> notesNew = List.from(notes.map((e) => e).toList());
       setNotes(notesNew);
       final SharedPreferences storage = await SharedPreferences.getInstance();
       await storage.setStringList("notes", notes);

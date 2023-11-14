@@ -23,6 +23,128 @@ class _NotesPageState extends State<NotesPage> {
     store.getNotes();
   }
 
+  deleteNotePopup(BuildContext context, int index) {
+    Widget cancelButton = ElevatedButton(
+      child: const Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+
+    Widget continueButton = ElevatedButton(
+      child: const Text("Continue"),
+      onPressed: () {
+        Navigator.of(context).pop();
+        store.deleteNote(index);
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: const Text("Atenção"),
+      content: const Text("Tem certeza que deseja excluir esta nota?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  editNotePopup(BuildContext context, int index) {
+    store.setNoteEdit(store.notes[index]);
+
+    Widget cancelButton = ElevatedButton(
+      child: const Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+
+    Widget continueButton = ElevatedButton(
+      child: const Text("Continue"),
+      onPressed: () {
+        Navigator.of(context).pop();
+        store.editNote(index);
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      content: Observer(builder: (_) {
+        return Form(
+          key: store.keyFormPopup,
+          child: TextFormField(
+            controller: store.noteEdit,
+            autofocus: true,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            onChanged: (_) {
+              if (store.debugError) {
+                store.keyFormPopup.currentState!.validate();
+              }
+            },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Preencha este campo';
+              }
+              return null;
+            },
+            cursorColor: Colors.black,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.white,
+              hintText: "Digite seu texto",
+              hintStyle: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+              alignLabelWithHint: true,
+              counterText: "",
+              contentPadding: const EdgeInsets.only(
+                bottom: 8.0,
+                top: 8.0,
+              ),
+              errorStyle: const TextStyle(
+                color: Colors.yellow,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.white),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: const BorderSide(color: Colors.white),
+                borderRadius: BorderRadius.circular(5),
+              ),
+            ),
+          ),
+        );
+      }),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,7 +194,9 @@ class _NotesPageState extends State<NotesPage> {
                                   ),
                                   const SizedBox(width: 16),
                                   GestureDetector(
-                                    onTap: () {},
+                                    onTap: () {
+                                      editNotePopup(context, index);
+                                    },
                                     child: const Icon(
                                       Icons.edit,
                                       color: Colors.black,
@@ -81,7 +205,7 @@ class _NotesPageState extends State<NotesPage> {
                                   const SizedBox(width: 16),
                                   GestureDetector(
                                     onTap: () {
-                                      store.deleteNote(index);
+                                      deleteNotePopup(context, index);
                                     },
                                     child: const Icon(
                                       Icons.cancel,
@@ -110,6 +234,7 @@ class _NotesPageState extends State<NotesPage> {
                     key: store.keyForm,
                     child: TextFormField(
                       controller: store.note,
+                      autofocus: true,
                       textAlign: TextAlign.center,
                       maxLines: 1,
                       onChanged: (_) {
